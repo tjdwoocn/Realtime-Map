@@ -1,4 +1,5 @@
-# Building Realtime Maps
+# Building Realtime Maps (1)
+## **Install Java JDK and Apache Kafka**
 
 ## Java 8 JDK 설치하기
 - **https://www.oracle.com/java/technologies/javase-jdk8-downloads.html**
