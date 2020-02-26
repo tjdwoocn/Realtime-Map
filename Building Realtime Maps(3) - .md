@@ -128,7 +128,10 @@ while true:
 ---
 
 ## Geojason 에서 Busline Coordinate 받아오기
-    -   Producer 에서 Consumer에 보내줄 메세지 정보(Busline Coordinate)를 가져오기 위해 geojason 이라는 웹페이지를 이용할것임   
+```
+# Producer 에서 Consumer에 보내줄 메세지 정보(Busline Coordinate)를 
+가져오기 위해 geojason 이라는 웹페이지를 이용할것임   
+```
   
 ### Geojason 접속, 좌표 획득
 - 아래 페이지 접속   
@@ -149,7 +152,11 @@ http://geojson.io/#map=2/20.0/0.0
 ---
 
 ## Producer에서 Consumer로 message 보내는 코드 작성하기
-    - 위에서 작성했던 코드를 기반으로, 우리가 저장한 json 파일의 내용에서 필요한 coordinate 값만 추출하여 message 변수로 만들어 consumer로 전송시킬것임
+
+```
+# 위에서 작성했던 코드를 기반으로, 우리가 저장한 json 파일의 내용에서 필요한 
+coordinate 값만 추출하여 message 변수로 만들어 consumer로 전송시킬것임
+```
 - 작성완료된 코드 ('busdata.py' 로 저장되어있음)
 ```python
 from pykafka import KafkaClient
@@ -195,9 +202,24 @@ def generate_checkpoint(coordinates):
 
 generate_checkpoint(coordinates)
 ```
+```
+- 'data' 라는 빈 딕셔너리 생성
+- 'busline'은 임의로 '00001' 이라 지정, 다른 busline은 '00002', '00003' 등으로 지정 
+- 'key'는 busline 번호와 uuid(Universally unique identifier)를 합쳐서 생성
+- 'timestamp'는 현재지역의(본인의 로컬환경) 시간을 기록
+- 'latitude', 'longitude' 는 coordinates 에서 추출
+```
+
+---
+## Consumer에 message 보내고 결과 확인하기
+### busline 00001의 message 보내기  
   - 'busdata.py' 파일을 실행 했을때의 모습   
 ![screenshot](./RM_img/screenshot63.png)    
-  - Consumer에 message 가 전송되어 쌓인 모습 (윗부분에 이전 메세지인 hello~ 가 보임)
+  - Consumer에 message 가 전송되어 쌓인 모습 (윗부분에 이전 메세지인 hello~ 가 보임)   
     ![screenshot](./RM_img/screenshot64.png)   
 
 
+### 다른 버스라인의 정보도 동일한 방법으로 보내기   
+![screenshot](./RM_img/screenshot65.png)   
+- 위에 표시된 부분만 수정하면 됨   
+- 3개의 버스라인 정보 전송 완료!!
