@@ -1,7 +1,7 @@
 # Building Realtime Maps (3)
 
 ## Create First Kafka Producer in Python with Pykafka library
-- 아래의 그림과 같은 구조를 형성할것임
+- 아래의 그림과 같은 구조를 형성할것임   
 ![screenshot](./RM_img/screenshot46.png)
 
 ---
@@ -23,7 +23,7 @@
     ```linux
     kafka-server-start.bat ../../config/server.properties
     ```
-    ![screenshot](./RM_img/screenshot47.png)   
+    ![screenshot](./RM_img/screenshot47.png)      
     - 둘 다 실행완료
 
 ---
@@ -88,7 +88,7 @@ https://pykafka.readthedocs.io/en/latest/
 
 ---
 
-## Producer 생성, 메세지 보내기 + Consumer 확인
+## Producer 생성, 메세지 보내기 + Consumer 확인하기
 - 파이썬으로 producer 생성, 메세지 보내기를 한 뒤 consumer에서 받은 메세지 확인할 것임   
   ```python
   # producer 생성
@@ -126,5 +126,78 @@ while true:
 ![screenshot](./RM_img/screenshot58.png)
 - 10초도 안되는 사이에 2000이 넘는 메세지가 생성/전송/확인 됨
 ---
+
+## Geojason 에서 Busline Coordinate 받아오기
+    -   Producer 에서 Consumer에 보내줄 메세지 정보(Busline Coordinate)를 가져오기 위해 geojason 이라는 웹페이지를 이용할것임   
+  
+### Geojason 접속, 좌표 획득
+- 아래 페이지 접속   
+http://geojson.io/#map=2/20.0/0.0   
+![screenshot](./RM_img/screenshot59.png)   
+- 본인이 기져올 지역의 coordinate(좌표) 설정    
+  - 아래 그림의 오른쪽 상단의 툴바에서 표시된 도구를 사용하여 본인이 가져올 구간의 좌표 지정
+![screenshot](./RM_img/screenshot60.png)   
+  - 임의로 일정 구간 지정함
+  - 추후에 실제 버스노선에 맞는 구간 지정 후 json 형태로 가져오면됨   
+  - 아래와 같이 json 형태로 된 정보를 가져올 수 있음   
+![screenshot](./RM_img/screenshot61.png)    
+
+### 'data' 폴더에 좌표가 기록된 json 파일 생성
+- 'data'라는 새로운 폴더를 만들고 그 안에 위에서 가져온 정보를 담은 json 파일 생성하기
+    ![screenshot](./RM_img/screenshot62.png)    
+    - 'busdata2', 'busdata3' 에는 각기 다른 버스라인의 좌표데이터 넣어주기   
+---
+
+## Producer에서 Consumer로 message 보내는 코드 작성하기
+    - 위에서 작성했던 코드를 기반으로, 우리가 저장한 json 파일의 내용에서 필요한 coordinate 값만 추출하여 message 변수로 만들어 consumer로 전송시킬것임
+- 작성완료된 코드 ('busdata.py' 로 저장되어있음)
+```python
+from pykafka import KafkaClient
+import json
+from datetime import datetime
+import uuid
+
+
+client = KafkaClient(hosts="localhost:9092")
+
+topic = client.topics['testBusdata']
+
+# producer 생성
+producer = topic.get_sync_producer()
+
+
+# read Coordinates from geojason
+input_file = open('./data/bus1.json')
+json_array = json.load(input_file) # json 형식의 데이터 로드
+
+# 가져온 json format data에서 coordinates 부분만 뽑기
+coordinates = json_array['features'][0]['geometry']['coordinates'] 
+
+# generate uuid
+def generate_uuid():
+    return uuid.uuid4()
+
+data = {}
+data['busline'] = '00001'
+
+#construct message and send it to kafka
+def generate_checkpoint(coordinates):
+    i = 0
+    while i < len(coordinates):
+        data['key'] = data['busline'] + '_' + str(generate_uuid())
+        data['timestamp'] = str(datetime.now())
+        data['latitude'] = coordinates[i][1]
+        data['longitude'] = coordinates[i][0]
+        message = json.dumps(data)
+        print(message)
+        producer.produce(message.encode('utf8'))
+        i += 1
+
+generate_checkpoint(coordinates)
+```
+  - 'busdata.py' 파일을 실행 했을때의 모습   
+![screenshot](./RM_img/screenshot63.png)    
+  - Consumer에 message 가 전송되어 쌓인 모습 (윗부분에 이전 메세지인 hello~ 가 보임)
+    ![screenshot](./RM_img/screenshot64.png)   
 
 
