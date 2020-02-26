@@ -47,8 +47,7 @@
 ![screenshot](./RM_img/screenshot49.png)
 
 ### Pykafka library 검색 및 설치
-- 구글에 pykafka 검색 또는 해당 링크 접속   
-https://pykafka.readthedocs.io/en/latest/   
+- 구글에 pykafka 검색 또는 [pykafka](https://pykafka.readthedocs.io/en/latest/) 링크 클릭      
 ![screenshot](./RM_img/screenshot50.png)
 
 - 새 프롬프트창에서 'pip install pykafka' 를 입력하여 설치      
@@ -135,11 +134,15 @@ while true:
   
 ### Geojason 접속, 좌표 획득
 - 아래 페이지 접속   
-http://geojson.io/#map=2/20.0/0.0   
-![screenshot](./RM_img/screenshot59.png)   
+  - http://geojson.io/#map=2/20.0/0.0   
+  - [GeoJson](http://geojson.io/#map=2/20.0/0.0)   
+
+    ![screenshot](./RM_img/screenshot59.png)   
+
 - 본인이 기져올 지역의 coordinate(좌표) 설정    
   - 아래 그림의 오른쪽 상단의 툴바에서 표시된 도구를 사용하여 본인이 가져올 구간의 좌표 지정
-![screenshot](./RM_img/screenshot60.png)   
+
+    ![screenshot](./RM_img/screenshot60.png)   
   - 임의로 일정 구간 지정함
   - 추후에 실제 버스노선에 맞는 구간 지정 후 json 형태로 가져오면됨   
   - 아래와 같이 json 형태로 된 정보를 가져올 수 있음   
