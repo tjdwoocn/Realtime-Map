@@ -40,7 +40,7 @@
     (localhost 에서 실행해도 되지만 0.0.0.0으로 변경해서 진행함)(0.0.0.0에 대한 설명 추가)    
     ![screenshot](./RM_img/screenshot30.png)   
     - Kafka를 실행하기 위해선 zookeeper가 필요함 
-
+### Zookeeper 실행하기
 - 설정완료 후 kafka/bin/windows/ 에 있는 'zookeeper-server-start.bat' 파일 실행하기
   - 프롬프트 창을 열어 경로를 windows 폴더로 이동   
   - 아래 명령어 입력
