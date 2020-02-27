@@ -1,14 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title></title>
         <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+            crossorigin=""/>
+         <!-- Make sure you put this AFTER Leaflet's CSS -->
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+            integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+            crossorigin=""></script>
+
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="css/style.css" rel="stylesheet">
+        <title>London Live Map</title>
     </head>
     <body>
-        <h1>Test Frontend with Flask</h1>
-        <p>Have fun</p>
-    
+        <h1>London Bus Live Map</h1>    
+        <div id='mapid' style="width:900px; height:580px"></div>
+
+        <script>
+            var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'pk.eyJ1IjoidGpkd29vY24iLCJhIjoiY2s3NGY5YzhiMDZkYjNsbnlodTM0NXkxbCJ9.EF87PivkJWkL5jOiE8cYww'
+            }).addTo(mymap);
+
+            mapMarkers1 = [];
+            mapMarkers2 = [];
+            mapMarkers3 = [];
+
+            var source = new EventSource('/topic/geodata_final');
+            source.addEventListener('message', fuction(e)){
+                
+                console.log('message');
+                obj = JSON.parse(e.data);
+                console.log(obj)
+
+                if(obj.busline == '00001'){
+                    for (var i = 0; i < mapMarkers1.length; i++){
+                        mymap.removeLayer(mapMarkers1[i]);
+                    }
+                    marker1 = L.marker([obj.latitude, obj.longitude],).addTo(mymap);
+                    mapMarkers1.push(marker1);
+                }
+
+                
+                if(obj.busline == '00002'){
+                    for (var i = 0; i < mapMarkers2.length; i++){
+                        mymap.removeLayer(mapMarkers2[i]);
+                    }
+                    marker1 = L.marker([obj.latitude, obj.longitude],).addTo(mymap);
+                    mapMarkers1.push(marker2);
+                }
+
+                
+                if(obj.busline == '00003'){
+                    for (var i = 0; i < mapMarkers3.length; i++){
+                        mymap.removeLayer(mapMarkers3[i]);
+                    }
+                    marker1 = L.marker([obj.latitude, obj.longitude],).addTo(mymap);
+                    mapMarkers1.push(marker3);
+                }
+                
+
+
+            }, false);
+        </script>
     </body>
 </html>
