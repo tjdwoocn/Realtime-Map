@@ -20,18 +20,19 @@ from pykafka import KafkaClient
 import json
 from datetime import datetime
 import uuid
+import time
 
 
 client = KafkaClient(hosts="localhost:9092")
 
-topic = client.topics['testBusdata']
+topic = client.topics['busdata_seoul']
 
 # producer 생성
 producer = topic.get_sync_producer()
 
 
 # read Coordinates from geojason
-input_file = open('./data/bus1.json')
+input_file = open('./data/7612.json')
 json_array = json.load(input_file) # json 형식의 데이터 로드
 
 # 가져온 json format data에서 coordinates 부분만 뽑기
@@ -56,5 +57,6 @@ def generate_checkpoint(coordinates):
         print(message)
         producer.produce(message.encode('utf8'))
         i += 1
+        time.sleep(1)
 
 generate_checkpoint(coordinates)

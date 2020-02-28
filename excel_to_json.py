@@ -26,7 +26,7 @@ import json
 import xlrd
 from collections import OrderedDict
 
-wb = xlrd.open_workbook('7612버스노선.xlsx')
+wb = xlrd.open_workbook('7611.xlsx')
 sh = wb.sheet_by_index(0)
 
 data_list = []
@@ -34,12 +34,16 @@ data_list = []
 for rownum in range(1, sh.nrows):
     data = OrderedDict()
     row_values = sh.row_values(rownum)
+    # 좌표값만 가져와 저장
     data['x_coordi'] = row_values[3]
     data['y_coordi'] = row_values[4]
+    # data_list에 좌표값 추가
     data_list.append(data)
 
-# ensure_ascii=False 옵션넣어주면 해결됨
+# ensure_ascii=False 옵션넣어주면 한글깨짐/바이트출력 문제 해결
+# json 형태의 문자열을 보기 좋게 나오게 하려면 dumps에 indent 옵션 추가
 j = json.dumps(data_list, ensure_ascii=False, indent=4)
 
-with open('coordi2.json', 'w+') as f:
+# json파일로 저장
+with open('7611.json', 'w+') as f:
     f.write(j)

@@ -25,7 +25,7 @@
 import json
 
 json_list = []
-csv_file = open('7612버스노선.csv', 'r', encoding='utf8')
+csv_file = open('6714.csv', 'r', encoding='utf8')
 
 for line in csv_file.readlines():
     bus_id, number, sta_nm, x_coordi, y_coordi, sta_id = line.strip().split(',')
@@ -33,10 +33,12 @@ for line in csv_file.readlines():
         float(x_coordi), float(y_coordi),
     ]
     json_list.append(data)
+    print(data)
 
 csv_file.close()
 
-json_file = open('coordi.json', 'w', encoding='utf8')
+json_file = open('6714.json', 'w', encoding='utf8')
+
 # 저장된것을 보면 한글이 byte 문자로 깨져서 나오는데 
 # ensure_ascii=False 옵션넣어주면 해결됨
 # json 형태의 문자열을 보기 좋게 나오게 하려면 dumps에 indent 옵션 추가

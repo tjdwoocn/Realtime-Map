@@ -12,15 +12,15 @@
             crossorigin=""></script>
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="css/style.css" rel="stylesheet">
-        <title>London Live Map</title>
+        <title>Seoul Live Map</title>
     </head>
     <body>
-        <h1>London Bus Live Map</h1>    
+        <h1>Seoul Bus Live Map</h1>    
         <div id='mapid' style="width:900px; height:580px"></div>
 
         <script>
-            var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+            var mymap = L.map('mapid').setView([37.5473, 126.9085], 12);
+            var marker = L.marker([37.5473, 126.9085]).addTo(mymap);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                 maxZoom: 18,
@@ -29,47 +29,52 @@
                 zoomOffset: -1,
                 accessToken: 'pk.eyJ1IjoidGpkd29vY24iLCJhIjoiY2s3NGY5YzhiMDZkYjNsbnlodTM0NXkxbCJ9.EF87PivkJWkL5jOiE8cYww'
             }).addTo(mymap);
-
+            
+            // 버스 (7612,7611,6714) 마커생성
             mapMarkers1 = [];
             mapMarkers2 = [];
             mapMarkers3 = [];
+            
+            // 새로운 event source 생성, busdata_seoul 이라는 topic 사용
+            var source = new EventSource('/topic/busdata_seoul');
+            // 새로운 메세지가 생성 될때마다 업데이트 해주기 위한 event listener 추가
+            source.addEventListener('message', function(e){
 
-            var source = new EventSource('/topic/geodata_final');
-            source.addEventListener('message', fuction(e)){
-                
+                // console에 메세지가 어떻게 전달되는지 보기위해 log 추가
                 console.log('message');
+                // 받은 log 데이터 json 형태로 파싱 후 log 기록
                 obj = JSON.parse(e.data);
-                console.log(obj)
-
+                console.log(obj);
+                
+                // 전달받은 message가 7612 버스의 좌표 데이터 라면
                 if(obj.busline == '00001'){
                     for (var i = 0; i < mapMarkers1.length; i++){
+                        // 가장 최신에 기록된 마커만 남겨두기위해 이전것은 제거
                         mymap.removeLayer(mapMarkers1[i]);
                     }
-                    marker1 = L.marker([obj.latitude, obj.longitude],).addTo(mymap);
+                    // 새로운 마커 생성, marker1에 7612의 각 정류소별 좌표 입력하여 맵에 표시
+                    marker1 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
                     mapMarkers1.push(marker1);
                 }
 
-                
+                // 7611 버스라면
                 if(obj.busline == '00002'){
                     for (var i = 0; i < mapMarkers2.length; i++){
                         mymap.removeLayer(mapMarkers2[i]);
                     }
-                    marker1 = L.marker([obj.latitude, obj.longitude],).addTo(mymap);
-                    mapMarkers1.push(marker2);
+                    marker2 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
+                    mapMarkers2.push(marker2);
                 }
 
-                
+                // 6714 버스라면
                 if(obj.busline == '00003'){
                     for (var i = 0; i < mapMarkers3.length; i++){
                         mymap.removeLayer(mapMarkers3[i]);
                     }
-                    marker1 = L.marker([obj.latitude, obj.longitude],).addTo(mymap);
-                    mapMarkers1.push(marker3);
+                    marker3 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
+                    mapMarkers3.push(marker3);
                 }
-                
-
-
-            }, false);
+            },  false);
         </script>
     </body>
 </html>
