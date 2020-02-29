@@ -20,7 +20,7 @@
 
         <script>
             var mymap = L.map('mapid').setView([37.5473, 126.9085], 12);
-            var marker = L.marker([37.5473, 126.9085]).addTo(mymap);
+            // var marker = L.marker([37.5473, 126.9085]).addTo(mymap);
             L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                 maxZoom: 18,
@@ -46,17 +46,19 @@
                 obj = JSON.parse(e.data);
                 console.log(obj);
                 
-                var busIcon = L.Icon.extend({
-                    options: {
-                        iconSize:     [38, 95],
-                        iconAnchor:   [22, 94],
-                        popupAnchor:  [-3, -76]
-                    }
-                });
+                // var busIcon = L.Icon.extend({
+                //     options: {
+                //         iconSize:     [38, 95],
+                //         iconAnchor:   [22, 94],
+                //         popupAnchor:  [-3, -76]
+                //     }
+                // });
 
-                var greenBus = new busIcon({iconUrl: 'green-bus.png'}),
-                    redBus = new busIcon({iconUrl: 'red-bus.png'}),
-                    yellowBus = new busIcon({iconUrl: 'yellow-bus.png'});
+                // // Icon 이미지를 맵 위에 띄울려면 이미지들이 cloud 같이 공적인(?) 저장공간에 있어야함
+                // // local 에 올린걸 사용하려니 안됨 (보류)
+                // var greenBus = new busIcon({iconUrl: 'green-bus.png'}),
+                //     redBus = new busIcon({iconUrl: 'red-bus.png'}),
+                //     yellowBus = new busIcon({iconUrl: 'yellow-bus.png'});
 
 
                 // 전달받은 message가 7612 버스의 좌표 데이터 라면
@@ -66,7 +68,7 @@
                         mymap.removeLayer(mapMarkers1[i]);
                     }
                     // 새로운 마커 생성, marker1에 7612의 각 정류소별 좌표 입력하여 맵에 표시
-                    marker1 = L.marker([obj.latitude, obj.longitude],{icon: greenBus}).addTo(mymap);
+                    marker1 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
                     // 마커에 팝업달기, openPopup()을 쓰면 팝업 자동 오픈함
                     marker1.bindPopup('<b>7612</b>').openPopup()
                     mapMarkers1.push(marker1);
@@ -77,7 +79,7 @@
                     for (var i = 0; i < mapMarkers2.length; i++){
                         mymap.removeLayer(mapMarkers2[i]);
                     }
-                    marker2 = L.marker([obj.latitude, obj.longitude],{icon: redBus}).addTo(mymap);
+                    marker2 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
                     marker2.bindPopup('<b>7611</b>').openPopup()
                     mapMarkers2.push(marker2);
                 }
@@ -87,7 +89,7 @@
                     for (var i = 0; i < mapMarkers3.length; i++){
                         mymap.removeLayer(mapMarkers3[i]);
                     }
-                    marker3 = L.marker([obj.latitude, obj.longitude],{icon: yellowBus}).addTo(mymap);
+                    marker3 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
                     marker3.bindPopup('<b>6714</b>').openPopup()
                     mapMarkers3.push(marker3);
                 }
