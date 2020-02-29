@@ -126,53 +126,64 @@ with open('7612.json', 'w+') as f:
 - 'index.html'의 access token 정보 넣어준 script 아래에 추가적으로 아래 코드 입력(javascript)
   
 ```javascript
-// 버스 (7612,7611,6714) 마커생성
-mapMarkers1 = [];
-mapMarkers2 = [];
-mapMarkers3 = [];
+ <script>
+            var mymap = L.map('mapid').setView([37.5473, 126.9085], 12);
+            var marker = L.marker([37.5473, 126.9085]).addTo(mymap);
+            L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 18,
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1,
+                accessToken: 'your token number'
+            }).addTo(mymap);
+            
+            // 버스 (7612,7611,6714) 마커생성
+            mapMarkers1 = [];
+            mapMarkers2 = [];
+            mapMarkers3 = [];
+            
+            // 새로운 event source 생성, busdata_seoul 이라는 topic 사용
+            var source = new EventSource('/topic/busdata_seoul');
+            // 새로운 메세지가 생성 될때마다 업데이트 해주기 위한 event listener 추가
+            source.addEventListener('message', function(e){
 
-// 새로운 event source 생성, busdata_seoul 이라는 topic 사용
-var source = new EventSource('/topic/busdata_seoul');
-// 새로운 메세지가 생성 될때마다 업데이트 해주기 위한 event listener 추가
-source.addEventListener('message', fuction(e)){
+                // console에 메세지가 어떻게 전달되는지 보기위해 log 추가
+                console.log('message');
+                // 받은 log 데이터 json 형태로 파싱 후 log 기록
+                obj = JSON.parse(e.data);
+                console.log(obj);
+                
+                // 전달받은 message가 7612 버스의 좌표 데이터 라면
+                if(obj.busline == '00001'){
+                    for (var i = 0; i < mapMarkers1.length; i++){
+                        // 가장 최신에 기록된 마커만 남겨두기위해 이전것은 제거
+                        mymap.removeLayer(mapMarkers1[i]);
+                    }
+                    // 새로운 마커 생성, marker1에 7612의 각 정류소별 좌표 입력하여 맵에 표시
+                    marker1 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
+                    mapMarkers1.push(marker1);
+                }
 
-    // console에 메세지가 어떻게 전달되는지 보기위해 log 추가
-    console.log('message');
-    // 받은 log 데이터 json 형태로 파싱 후 log 기록
-    obj = JSON.parse(e.data);
-    console.log(obj);
-    
-    // 전달받은 message가 7612 버스의 좌표 데이터 라면
-    if(obj.busline == '00001'){
-        for (var i = 0; i < mapMarkers1.length; i++){
-            // 가장 최신에 기록된 마커만 남겨두기위해 이전것은 제거
-            mymap.removeLayer(mapMarkers1[i]);
-        }
-        // 새로운 마커 생성, marker1에 7612의 각 정류소별 좌표 입력하여 맵에 표시
-        marker1 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
-        mapMarkers1.push(marker1);
-    }
+                // 7611 버스라면
+                if(obj.busline == '00002'){
+                    for (var i = 0; i < mapMarkers2.length; i++){
+                        mymap.removeLayer(mapMarkers2[i]);
+                    }
+                    marker2 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
+                    mapMarkers2.push(marker2);
+                }
 
-    // 7611 버스라면
-    if(obj.busline == '00002'){
-        for (var i = 0; i < mapMarkers2.length; i++){
-            mymap.removeLayer(mapMarkers2[i]);
-        }
-        marker2 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
-        mapMarkers2.push(marker2);
-    }
-
-    // 6714 버스라면
-    if(obj.busline == '00003'){
-        for (var i = 0; i < mapMarkers3.length; i++){
-            mymap.removeLayer(mapMarkers3[i]);
-        }
-        marker3 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
-        mapMarkers3.push(marker3);
-    }
-}
-,false);
-
+                // 6714 버스라면
+                if(obj.busline == '00003'){
+                    for (var i = 0; i < mapMarkers3.length; i++){
+                        mymap.removeLayer(mapMarkers3[i]);
+                    }
+                    marker3 = L.marker([obj.latitude, obj.longitude]).addTo(mymap);
+                    mapMarkers3.push(marker3);
+                }
+            },  false);
+        </script>
 ```
 ### 새로운 topic 생성 'busdata_seoul'
 - 새 프롬프트 창에서 아래 명령어 입력
@@ -186,4 +197,15 @@ source.addEventListener('message', fuction(e)){
 
 ---
 
-### 
+### Map에서 마커들의 변화 확인하기
+> 각 busdata.py 파일들을 실행시키고, producer가 생산해내는 message가 전달되는 모습을 web 상에서 확인해보기
+- 각기 다른 프롬프트에서 'busdata1.py', 'busdata2.py', 'busdata3.py' 파일들 실행   
+ ![screenshot](./RM_img/screenshot94.png)
+
+- 웹페이지에서 우클릭 --> '검사' 클릭 --> 'Console' 클릭 하여 메세지 로그 확인
+    ![screenshot](./RM_img/screenshot95.png)
+    ![screenshot](./RM_img/screenshot93.png)
+    - 메세지가 기록되는것 확인 + 맵상에서 3개의 마커들의 위치가 지속적으로 변하는것 확인
+    - = 완.료.!
+
+
